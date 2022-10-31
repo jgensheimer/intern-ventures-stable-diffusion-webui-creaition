@@ -1,6 +1,6 @@
-# This file is part of sygil-webui (https://github.com/Sygil-Dev/sygil-webui/).
+# This file is part of stable-diffusion-webui (https://github.com/sd-webui/stable-diffusion-webui/).
 
-# Copyright 2022 Sygil-Dev team.
+# Copyright 2022 sd-webui team.
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -25,11 +25,9 @@ from streamlit.elements.image import image_to_url
 
 #other imports
 import uuid
+from typing import Union
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
-
-# streamlit components
-from custom_components import sygil_suggestions
 
 # Temp imports
 
@@ -37,7 +35,6 @@ from custom_components import sygil_suggestions
 # end of imports
 #---------------------------------------------------------------------------------------------------------------
 
-sygil_suggestions.init()
 
 try:
     # this silences the annoying "Some weights of the model checkpoint were not used when initializing..." message at start.
@@ -106,7 +103,7 @@ def stable_horde(outpath, prompt, seed, sampler_name, save_grid, batch_size,
 
     log.append("Generating image with Stable Horde.")
 
-    st.session_state["progress_bar_text"].code('\n'.join(str(log)), language='')
+    st.session_state["progress_bar_text"].code('\n'.join(log), language='')
 
     # start time after garbage collection (or before?)
     start_time = time.time()
@@ -147,7 +144,7 @@ def stable_horde(outpath, prompt, seed, sampler_name, save_grid, batch_size,
 
     headers = {"apikey": api_key}
     logger.debug(final_submit_dict)
-    st.session_state["progress_bar_text"].code('\n'.join(str(log)), language='')
+    st.session_state["progress_bar_text"].code('\n'.join(log), language='')
 
     horde_url = "https://stablehorde.net"
 
@@ -157,7 +154,7 @@ def stable_horde(outpath, prompt, seed, sampler_name, save_grid, batch_size,
         logger.debug(submit_results)
 
         log.append(submit_results)
-        st.session_state["progress_bar_text"].code('\n'.join(str(log)), language='')
+        st.session_state["progress_bar_text"].code('\n'.join(log), language='')
 
         req_id = submit_results['id']
         is_done = False
@@ -230,7 +227,7 @@ def stable_horde(outpath, prompt, seed, sampler_name, save_grid, batch_size,
                                             save_grid=save_grid,
                                             sort_samples=sampler_name, sampler_name=sampler_name, ddim_eta=ddim_eta, n_iter=n_iter,
                                             batch_size=batch_size, i=iter, save_individual_images=save_individual_images,
-                                            model_name="Stable Diffusion v1.5")
+                                            model_name="Stable Diffusion v1.4")
 
             output_images.append(img)
 
@@ -405,12 +402,10 @@ def layout():
 
         with input_col1:
             #prompt = st.text_area("Input Text","")
-            placeholder = "A corgi wearing a top hat as an oil painting."
-            prompt = st.text_area("Input Text","", placeholder=placeholder, height=54)
-            sygil_suggestions.suggestion_area(placeholder)
+            prompt = st.text_area("Input Text","", placeholder="A corgi wearing a top hat as an oil painting.")
 
         # creating the page layout using columns
-        col1, col2, col3 = st.columns([2,5,2], gap="large")
+        col1, col2, col3 = st.columns([1,2,1], gap="large")
 
         with col1:
             width = st.slider("Width:", min_value=st.session_state['defaults'].txt2img.width.min_value, max_value=st.session_state['defaults'].txt2img.width.max_value,
@@ -447,7 +442,7 @@ def layout():
 
                 st.session_state["update_preview"] = st.session_state["defaults"].general.update_preview
                 st.session_state["update_preview_frequency"] = st.number_input("Update Image Preview Frequency",
-                                                                               min_value=0,
+                                                                               min_value=1,
                                                                                value=st.session_state['defaults'].txt2img.update_preview_frequency,
                                                                                help="Frequency in steps at which the the preview image is updated. By default the frequency \
                                                                                is set to 10 step.")
@@ -488,7 +483,7 @@ def layout():
                                                                 help="Select the model you want to use. This option is only available if you have custom models \
                                                                 on your 'models/custom' folder. The model name that will be shown here is the same as the name\
                                                                 the file for the model has on said folder, it is recommended to give the .ckpt file a name that \
-                                                                will make it easier for you to distinguish it from other models. Default: Stable Diffusion v1.5")
+                                                                will make it easier for you to distinguish it from other models. Default: Stable Diffusion v1.4")
 
             st.session_state.sampling_steps = st.number_input("Sampling Steps", value=st.session_state.defaults.txt2img.sampling_steps.value,
                                                               min_value=st.session_state.defaults.txt2img.sampling_steps.min_value,
