@@ -73,13 +73,13 @@ txt2img:
     width:
         value:      512
         min_value:  64
-        max_value:  2048
+        max_value:  512
         step:       64
 
     height:
         value:      512
         min_value:  64
-        max_value:  2048
+        max_value:  512
         step:       64
 
     cfg_scale:
