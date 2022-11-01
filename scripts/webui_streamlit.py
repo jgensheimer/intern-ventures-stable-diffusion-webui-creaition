@@ -107,8 +107,8 @@ def load_css(isLocal, nameOrURL):
 def layout():
         """Layout functions to define all the streamlit layout here."""
         if not st.session_state["defaults"].debug.enable_hydralit:
-            st.set_page_config(page_title="Stable Diffusion Playground", layout="wide")
-
+            st.set_page_config(page_title="creaition stable diffusion", page_icon="creaition_icon.jpeg", layout="wide")
+                
         #app = st.HydraApp(title='Stable Diffusion WebUI', favicon="", sidebar_state="expanded", layout="wide",
                                         #hide_streamlit_markers=False, allow_url_nav=True , clear_cross_app_sessions=False)
 
@@ -133,6 +133,8 @@ def layout():
             tabs = on_hover_tabs(tabName=['Stable Diffusion', "Textual Inversion","Model Manager","Settings"],
                                  iconName=['dashboard','model_training' ,'cloud_download', 'settings'], default_choice=0)
 
+     
+
             # need to see how to get the icons to show for the hydralit option_bar
             #tabs = hc.option_bar([{'icon':'grid-outline','label':'Stable Diffusion'}, {'label':"Textual Inversion"},
                                                         #{'label':"Model Manager"},{'label':"Settings"}],
@@ -147,36 +149,46 @@ def layout():
             except NameError:
                 st.experimental_rerun()
 
-            txt2img_tab, img2img_tab, txt2vid_tab, img2txt_tab, concept_library_tab = st.tabs(["Text-to-Image", "Image-to-Image",
-                                                                                               "Text-to-Video", "Image-To-Text",
-                                                                                                           "Concept Library"])
-            #with home_tab:
-                    #from home import layout
-                    #layout()
 
-            with txt2img_tab:
-                from txt2img import layout
-                layout()
+            from txt2img import layout
+            layout()
 
-            with img2img_tab:
-                from img2img import layout
-                layout()
+    ####################################################################################
+            # ## this code is original and enables multiple tabs
 
-            #with inpainting_tab:
-                #from inpainting import layout
-                #layout()
+            #txt2img_tab, img2txt_tab = st.tabs(["Text-to-Image","Concept Library"])
+            # txt2img_tab, img2img_tab, txt2vid_tab, img2txt_tab, concept_library_tab = st.tabs(["Text-to-Image", "Image-to-Image",
+            #                                                                                      "Text-to-Video", "Image-To-Text",
+            #                                                                                              "Concept Library"])
+            # #with home_tab:
+            #         #from home import layout
+            #         #layout()
 
-            with txt2vid_tab:
-                from txt2vid import layout
-                layout()
+            # with txt2img_tab:
+            #     from txt2img import layout
+            #     layout()
 
-            with img2txt_tab:
-                from img2txt import layout
-                layout()
+            
+            # with img2img_tab:
+            #     from img2img import layout
+            #     layout()
+            
+            # #with inpainting_tab:
+            #     #from inpainting import layout
+            #     #layout()
 
-            with concept_library_tab:
-                from sd_concept_library import layout
-                layout()
+            # with txt2vid_tab:
+            #     from txt2vid import layout
+            #     layout()
+
+            # with img2txt_tab:
+            #     from img2txt import layout
+            #     layout()
+
+            # with concept_library_tab:
+            #     from sd_concept_library import layout
+            #     layout()
+    #################################################################################### 
 
         #
         elif tabs == 'Model Manager':

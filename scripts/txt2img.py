@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # base webui import and utils.
 from sd_utils import *
+from PIL import Image
 
 # streamlit imports
 from streamlit import StopException
@@ -395,10 +396,15 @@ def txt2img(prompt: str, ddim_steps: int, sampler_name: str, n_iter: int, batch_
 #
 @logger.catch(reraise=True)
 def layout():
+    creaition_logo = Image.open("creaition_logo.png")
+    st.image(creaition_logo, width=400)
+
     with st.form("txt2img-inputs"):
         st.session_state["generation_mode"] = "txt2img"
 
         input_col1, generate_col1 = st.columns([10,1])
+
+        
 
         with input_col1:
             #prompt = st.text_area("Input Text","")
@@ -484,6 +490,8 @@ def layout():
                                                                 on your 'models/custom' folder. The model name that will be shown here is the same as the name\
                                                                 the file for the model has on said folder, it is recommended to give the .ckpt file a name that \
                                                                 will make it easier for you to distinguish it from other models. Default: Stable Diffusion v1.4")
+            else:
+                st.session_state["custom_model"] = "Stable Diffusion v1.4"
 
             st.session_state.sampling_steps = st.number_input("Sampling Steps", value=st.session_state.defaults.txt2img.sampling_steps.value,
                                                               min_value=st.session_state.defaults.txt2img.sampling_steps.min_value,
