@@ -136,22 +136,35 @@ class SpatialRescaler(nn.Module):
 
 class FrozenCLIPEmbedder(AbstractEncoder):
     """Uses the CLIP transformer encoder for text (from Hugging Face)"""
-    def __init__(self, version="openai/clip-vit-large-patch14", device="cuda", max_length=77):
+    def __init__(self, version="openai/clip-vit-large-patch14", textual_inversion=False, device="cuda", max_length=77):
         super().__init__()
         if os.path.exists("models/clip-vit-large-patch14"):
             self.tokenizer = CLIPTokenizer.from_pretrained("models/clip-vit-large-patch14")
             self.transformer = CLIPTextModel.from_pretrained("models/clip-vit-large-patch14")
+            
         else:
-            self.tokenizer = CLIPTokenizer.from_pretrained(version)
-            self.transformer = CLIPTextModel.from_pretrained(version)
+            print("load model with huggingface diffusers")
+            if textual_inversion:
+                self.tokenizer = CLIPTokenizer.from_pretrained(os.path.join(version,"tokenizer"))
+                self.transformer = CLIPTextModel.from_pretrained(os.path.join(version,"text_encoder"))
+            else:
+                self.tokenizer = CLIPTokenizer.from_pretrained(version)
+                self.transformer = CLIPTextModel.from_pretrained(version)
+            #from diffusers import StableDiffusionPipeline
+            #pipe = StableDiffusionPipeline.from_pretrained(version, torch_dtype=torch.float16)
+            #self.tokenizer = pipe.tokenizer
+            #self.transformer = pipe.text_encoder
+            print("Model loaded with huggingface diffusers")
         self.device = device
         self.max_length = max_length
         self.freeze()
 
     def freeze(self):
+        print("feezing clip")
         self.transformer = self.transformer.eval()
         for param in self.parameters():
             param.requires_grad = False
+        print("clip feezed")
 
     def forward(self, text):
         batch_encoding = self.tokenizer(text, truncation=True, max_length=self.max_length, return_length=True,

@@ -635,6 +635,7 @@ def layout():
         if generate_button:
 
             with col2:
+                
                 if not use_stable_horde:
                     with hc.HyLoader('Loading Models...', hc.Loaders.standard_loaders,index=[0]):
                         load_models(use_LDSR=st.session_state["use_LDSR"], LDSR_model=st.session_state["LDSR_model"],
@@ -642,11 +643,12 @@ def layout():
                                     use_RealESRGAN=st.session_state["use_RealESRGAN"], RealESRGAN_model=st.session_state["RealESRGAN_model"],
                                     CustomModel_available=server_state["CustomModel_available"], custom_model=st.session_state["custom_model"])
 
+
                 #print(st.session_state['use_RealESRGAN'])
                 #print(st.session_state['use_LDSR'])
                 #try:
                 #
-
+                
                 output_images, seeds, info, stats = txt2img(prompt, st.session_state.sampling_steps, sampler_name, st.session_state["batch_count"], st.session_state["batch_size"],
                                                             cfg_scale, seed, height, width, separate_prompts, normalize_prompt_weights, save_individual_images,
                                                             save_grid, group_by_prompt, save_as_jpg, st.session_state["use_GFPGAN"], st.session_state['GFPGAN_model'],
@@ -654,8 +656,23 @@ def layout():
                                                             use_LDSR=st.session_state["use_LDSR"], LDSR_model=st.session_state["LDSR_model"],
                                                             variant_amount=variant_amount, variant_seed=variant_seed, write_info_files=write_info_files,
                                                             use_stable_horde=use_stable_horde, stable_horde_key=stable_horde_key)
+                
 
                 message.success('Render Complete: ' + info + '; Stats: ' + stats, icon="✅")
+                
+                """
+
+                print(prompt)
+                from diffusers import StableDiffusionPipeline
+                import torch
+
+                torch.manual_seed(4)
+                model_id = "/home/ai-ventures/diffusers/examples/textual_inversion/textual_inversion_crytek_hunt2"
+                pipe = StableDiffusionPipeline.from_pretrained(model_id).to("cuda:1")
+                output_images = pipe(prompt, num_inference_steps=100, guidance_scale=7.5).images
+                print(output_images)
+                seeds=1
+                """
 
             #history_tab,col1,col2,col3,PlaceHolder,col1_cont,col2_cont,col3_cont = st.session_state['historyTab']
 

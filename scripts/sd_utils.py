@@ -289,7 +289,6 @@ def load_models(use_LDSR = False, LDSR_model='model', use_GFPGAN=False, GFPGAN_m
                 logger.debug("LDSR was in memory but we won't use it. Removing to save VRAM.")
                 del server_state["LDSR"]
 
-
     with server_state_lock["GFPGAN"]:
         if use_GFPGAN:
             if "GFPGAN" in server_state and server_state["GFPGAN"].name == GFPGAN_model:
@@ -344,6 +343,7 @@ def load_models(use_LDSR = False, LDSR_model='model', use_GFPGAN=False, GFPGAN_m
                    or ("optimized" in server_state and server_state['optimized'] != st.session_state['defaults'].general.optimized):
 
                     logger.info("Model options changed, deleting the model from memory.")
+
 
                     del server_state['float16']
                     del server_state['no_half']
@@ -432,7 +432,20 @@ def load_model_from_config(config, ckpt, verbose=False):
     if "global_step" in pl_sd:
         logger.info(f"Global Step: {pl_sd['global_step']}")
     sd = pl_sd["state_dict"]
+    
+    
+    #remove everything that is related to clip from the state dict so that the
+    #model can be loaded and textual inversion is possible
+    sd_ = sd.copy()
+    for k in sd.keys():
+        if "cond_stage_model.transformer.text_model" in k:
+            del sd_[k]
+    sd = sd_.copy()
+    print(sd.keys())
+    print("SCRIPT sd_utils.py")
+
     model = instantiate_from_config(config.model)
+
     m, u = model.load_state_dict(sd, strict=False)
     if len(m) > 0 and verbose:
         logger.info("missing keys:")
@@ -440,6 +453,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     if len(u) > 0 and verbose:
         logger.info("unexpected keys:")
         logger.info(u)
+
 
     model.cuda()
     model.eval()
@@ -1429,7 +1443,6 @@ def load_sd_model(model_name: str):
             if torch.cuda.is_available() else torch.device("cpu")
         model = (model if st.session_state.defaults.general.no_half
                  else model.half()).to(device)
-
         return config, device, model, None, None
 
 
