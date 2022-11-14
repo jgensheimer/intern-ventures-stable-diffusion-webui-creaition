@@ -70,5 +70,5 @@ model:
       target: ldm.modules.encoders.modules.FrozenCLIPEmbedder
       params:
         textual_inversion: True
-        version: "/home/ai-ventures/diffusers/examples/textual_inversion/textual_inversion_crytek_hunter"
+        version: "/home/ai-ventures/diffusers/examples/textual_inversion/textual_inversion_merck"
        
